@@ -15,7 +15,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main', credentialsId: 'git', url: 'https://github.com/echuwok12/SplitPayment'
+                git branch: 'main', credentialsId: 'git', url: 'https://github.com/echuwok12/TripSplitter'
             }
         }
 
