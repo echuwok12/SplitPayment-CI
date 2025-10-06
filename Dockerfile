@@ -12,3 +12,4 @@ WORKDIR /workspace
 
 ENTRYPOINT ["/bin/bash", "-lc"]
 CMD ["bash"]
+
