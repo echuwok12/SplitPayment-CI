@@ -7,10 +7,9 @@ pipeline {
 
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
-        IMAGE = "tripsplitter/tripapp"
-        IMAGE_TAG = "v${BUILD_NUMBER}"
-        CD_REPO = "https://github.com/echuwok12/SplitPayment-CD.git"
         DEPLOY_PATH = "deploy/tripapp"
+        IMAGE = "harbor.duckdns.org/tripsplitter/tripapp"
+        IMAGE_TAG = "v${BUILD_NUMBER}"
     }
 
     stages {
@@ -68,8 +67,8 @@ pipeline {
         stage('Docker Build & Tag') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-cred') {
-                        sh "docker build -t ${IMAGE}:${IMAGE_TAG} -f Dockerfile.app ."
+                    withDockerRegistry(credentialsId: 'harbor-cred', url: 'https://harbor.duckdns.org') {
+                        sh "docker build -t ${IMAGE}:${IMAGE_TAG} -f Dockerfile ."
                     }
                 }
             }
@@ -84,7 +83,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-cred') {
+                    withDockerRegistry(credentialsId: 'harbor-cred', url: 'https://harbor.duckdns.org') {
                         sh "docker push ${IMAGE}:${IMAGE_TAG}"
                     }
                 }
@@ -125,7 +124,7 @@ pipeline {
                     sh '''
                         echo "Deploying updated manifests to AKS..."
                         kubectl apply -f cd-repo/${DEPLOY_PATH}/ -n tripapp
-                        kubectl rollout status deployment/myapp -n tripapp || true
+                        kubectl rollout status deployment/tripapp -n tripapp || true
                     '''
                 }
             }
