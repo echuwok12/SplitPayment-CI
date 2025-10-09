@@ -1,15 +1,13 @@
-# Dockerfile.ci
-FROM node:18-slim
+FROM node:20-alpine
 
-ENV DEBIAN_FRONTEND=noninteractive
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git curl jq ca-certificates \
- && rm -rf /var/lib/apt/lists/*
+COPY package.json package-lock.json* ./
 
-WORKDIR /workspace
+COPY . .
 
-ENTRYPOINT ["/bin/bash", "-lc"]
-CMD ["bash"]
+RUN npm run build
 
+EXPOSE 5000
+
+CMD ["node", "server/index.js"]
